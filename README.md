@@ -8,7 +8,7 @@ SahibBot requires a keys.py to store all of your user data.
 The format is as follows:
 
 ```
-botToken = "<Discord Bot Token"
+botToken = "<Discord Bot Token>"
 directory = {
     "<@User>": "+1<UserPhone1>", 
     "<@User2>": "+<UserPhone2>", 
@@ -19,7 +19,7 @@ directory = {
 For Example:
 
 ```
-botToken = "MzYwMzEzNTY0ODczMDk3MjE2.DcQIrA.BfaGXIbOsK5V-m3Mo7cyK6oQIZA"
+botToken = "MzYwMzEzNTY0ODczMDk3MjE2.donotusethis.thisisasampletoken"
 directory = {
     "<@000000000000000001>": "+10000000001", 
     "<@123456789012345678>": "+13218675309", 
