@@ -23,19 +23,31 @@ twilioAuthToken = keys.twilioAuthToken
 
 # Initialize twilio and discord apis.
 twilioClient = Client(twilioAccountSid, twilioAuthToken)
-# discordClient = discord.Client()
+#discordClient = discord.Client()
 bot = commands.Bot(command_prefix='!')
 
 # First test command
 @bot.command()
-async def test(ctx):
-    pass
+async def test(ctx, mention):
+    print("Ping Called")
 
-# #Show Console we are logged in.
-# @discordClient.event
-# async def on_ready():
-#     print('Logged in as ' + discordClient.user.name + " " + discordClient.user.id)
-#     print('------')
+    # if len(message.mentions) == 1:
+    #     print("MENTION PASS")
+    for user in directory:
+        if user == mention:
+            await ctx.send("DEBUG OUT: User Found {}".format(directory[user]))
+            # twilioClient.messages.create(
+            #     to    = directory[user],
+            #     from_ = twilioNumber,
+            #     body  = "{} has pinged you in discord!".format(message.author.name),
+            # )
+            print("Message Sent: '{} has pinged you in discord!'".format(ctx.message.author.id))
+
+#Show Console we are logged in.
+@bot.event
+async def on_ready():
+    print('Logged in as ' + bot.user.name + " " + bot.user.id)
+    print('------')
 
 
 # @discordClient.event
@@ -58,4 +70,4 @@ async def test(ctx):
 #         else:
 #             await discordClient.send_message(message.channel, "ERR: Multiple mentions therefore list is unreliable.")
 
-# discordClient.run(discordBotToken)
+bot.run(discordBotToken)
