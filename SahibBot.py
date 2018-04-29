@@ -17,31 +17,34 @@ directory = keys.directory
 discordBotToken = keys.botToken
 
 # requires twilio account and API keys.
-twilioNumber = keys.twilioNumber
-twilioAccountSid = keys.twilioAccountSid
-twilioAuthToken = keys.twilioAuthToken
+# twilioNumber = keys.twilioNumber
+# twilioAccountSid = keys.twilioAccountSid
+# twilioAuthToken = keys.twilioAuthToken
 
 # Initialize twilio and discord apis.
-twilioClient = Client(twilioAccountSid, twilioAuthToken)
-#discordClient = discord.Client()
+# twilioClient = Client(twilioAccountSid, twilioAuthToken)
+# discordClient = discord.Client()
 bot = commands.Bot(command_prefix='!')
 
 # First test command
-@bot.command()
-async def test(ctx, mention):
-    print("Ping Called")
-
+@bot.command(pass_context = True)
+async def ping(ctx, *, member : discord.Member = None):
+    if member is None:
+        await bot.say(ctx.message.author.mention + ": A person is needs to be included when pinging someone!")
+    else:
     # if len(message.mentions) == 1:
-    #     print("MENTION PASS")
-    for user in directory:
-        if user == mention:
-            await ctx.send("DEBUG OUT: User Found {}".format(directory[user]))
-            # twilioClient.messages.create(
-            #     to    = directory[user],
-            #     from_ = twilioNumber,
-            #     body  = "{} has pinged you in discord!".format(message.author.name),
-            # )
-            print("Message Sent: '{} has pinged you in discord!'".format(ctx.message.author.id))
+        print("MENTION PASS")
+        print("User " + ctx.message.author.name + "(" + ctx.message.author.id + ")" + " is mentioning " + member.name + "(" + member.id + ")")
+        for user in directory:
+            if user == member.id:
+                await bot.say("DEBUG OUT: User Found {}".format(directory[user]))
+                # twilioClient.messages.create(
+                #     to    = directory[user],
+                #     from_ = twilioNumber,
+                #     body  = "{} has pinged you in discord!".format(message.author.name),
+                # )
+                print("Message Sent: '{} has pinged you in discord!'".format(ctx.message.author.name))
+                await bot.say(ctx.message.author.mention + ": Successfully pinged " + member.name + "(" + member.id + ")" + " at {}".format(directory[user]))
 
 #Show Console we are logged in.
 @bot.event
