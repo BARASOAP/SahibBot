@@ -1,25 +1,18 @@
-# listen for messages on a discord server (globally, all channels)
-# send to specified phone number if the message wasn't sent from the bot
+# listen for ping on discord server (globally, all channels)
+# Sends a ping to user's phone if outside of cooldown.
 import discord
 import asyncio
 import time
+import keys
 
-# discord.py has logging available: see docs. you probs won't need.
+botName      = 'Yukkuri' 
+# Eventually, we'll have Yukkuri talk more so 
+# this will be a safemeasure so there are no infinite loops
+# of Yukkuri talking to itself
 
-botName      = 'Yukkuri' # IMPORTANT! must be real bot username
-#       otherwise you'll get infinite loops of the bot responding to itself
-
-keysFile = open("keys.txt")
-keys = keysFile.readlines()
-
-# pull the discord bot token from 
-discordBotToken = keys[0].rstrip()
-
-###############################################################################
-# auth client objects
+directory = keys.directory 
+discordBotToken = keys.botToken
 discordClient = discord.Client()
-
-directory = {<DICTIONARY OF EVERYONES PHONES AND @REPLY NAMES>}
 
 @discordClient.event
 async def on_ready():
