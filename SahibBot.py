@@ -4,7 +4,7 @@ import discord
 from discord.ext import commands
 import asyncio
 import keys
-from twilio.rest import Client
+# from twilio.rest import Client
 
 botName      = 'Yukkuri'
 # Eventually, we'll have Yukkuri talk more so
@@ -28,7 +28,8 @@ bot = commands.Bot(command_prefix='!')
 @bot.command(pass_context = True)
 async def ping(ctx, member : discord.Member = None):
     if member is None:
-        await bot.say(ctx.message.author.mention + ": A person is needs to be included when pinging someone!")
+        await bot.say(ctx.message.author.mention + 
+        	": A person is needs to be included when pinging someone!")
     else:
     # if len(message.mentions) == 1:
         print("MENTION PASS")
@@ -41,8 +42,14 @@ async def ping(ctx, member : discord.Member = None):
                 #     from_ = twilioNumber,
                 #     body  = "{} has pinged you in discord!".format(message.author.name),
                 # )
-                print("Message Sent: '{} has pinged you in discord!'".format(ctx.message.author.name))
-                await bot.say(ctx.message.author.mention + ": Successfully pinged " + member.mention + "(" + member.id + ")" + " at {}".format(directory[user]))
+                print("Message Sent: '{} has pinged you in discord!'".format(
+                	ctx.message.author.name
+                	))
+                await bot.say(
+                	ctx.message.author.mention + 
+                	": Successfully pinged " + member.mention + 
+                	"(" + member.id + ")" + " at {}".format(directory[user])
+                	)
 
 # Show Console we are logged in.
 @bot.event
@@ -50,14 +57,14 @@ async def on_ready():
     print('Logged in as ' + bot.user.name + " " + bot.user.id)
     print('------')
 
-# Commands has its own way of handling errors. 
+# Commands has its own way of handling errors.
 @ping.error
-async def ping_error(ctx, error):
-    print(dir(error))
-    print(commands.BadArgument)
+async def ping_error(error, ctx):
     if isinstance(error, commands.errors.BadArgument):
-        await bot.say("ERROR HOLY CRAP")
+        await bot.say("{}: Really? How about you @Mention someone buddy.".format(
+        	ctx.message.author.mention
+        	))
     else:
-        print(type(error), error)
+    	print("Unhandled error for ping module: {} | {} ".format(error, ctx))
 
 bot.run(discordBotToken)
