@@ -25,6 +25,9 @@ bot = commands.Bot(command_prefix='!')
 @bot.command(pass_context = True)
 async def ping(ctx, member : discord.Member = None):
     sent = False
+    if member is None:
+        ping.reset_cooldown(ctx)
+        raise commands.BadArgument("Member not provided")
     for user in directory:
         if user == member.mention:
             # twilioClient.messages.create(
