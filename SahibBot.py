@@ -23,11 +23,8 @@ bot = commands.Bot(command_prefix='!')
 
 @commands.cooldown(1, 60 * 30, commands.cooldowns.BucketType.user)
 @bot.command(pass_context = True)
-async def ping(ctx, member : discord.Member = None):
+async def ping(ctx, member: discord.Member):
     sent = False
-    if member is None:
-        ping.reset_cooldown(ctx)
-        raise commands.BadArgument("Member not provided")
     for user in directory:
         if user == member.mention:
             # twilioClient.messages.create(
@@ -61,7 +58,7 @@ async def on_ready():
 
 @ping.error
 async def ping_error(error, ctx):
-    if isinstance(error, commands.errors.BadArgument):
+    if (isinstance(error, commands.errors.BadArgument)) or (isinstance(error, commands.errors.MissingRequiredArgument)):
         await bot.say("{}: Please mention someone in your command.".format(
         	ctx.message.author.mention
         	))
