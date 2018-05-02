@@ -24,6 +24,7 @@ bot = commands.Bot(command_prefix='!')
 @commands.cooldown(1, 60 * 30, commands.cooldowns.BucketType.user)
 @bot.command(pass_context = True)
 async def ping(ctx, member : discord.Member = None):
+    sent = False
     for user in directory:
         if user == member.mention:
             # twilioClient.messages.create(
@@ -34,13 +35,25 @@ async def ping(ctx, member : discord.Member = None):
             print("Message Sent: '{} has pinged you in discord!'".format(
                 ctx.message.author.name
                 ))
-            await bot.say("{}: Ping sent to {} at {}!".format(ctx.message.author.mention, 
-                member.mention, directory[user]
+            await bot.say("{}: Ping sent to {} at {}!".format(
+                ctx.message.author.mention, 
+                member.mention, 
+                directory[user]
                 ))
+            sent = True
+    if not sent:
+        await bot.say("{}: I couldn't find {} in the directory.".format(
+            ctx.message.author.mention,
+            member.mention
+            ))
+        ping.reset_cooldown(ctx)
 
 @bot.event
 async def on_ready():
-    print('Logged in as ' + bot.user.name + " " + bot.user.id)
+    print('Logged in as {} {}'.format(
+        bot.user.name, 
+        bot.user.id
+        ))
     print('------')
 
 @ping.error
