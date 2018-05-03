@@ -1,54 +1,73 @@
 # listen for ping on discord server (globally, all channels)
 # Sends a ping to user's phone if outside of cooldown.
 import discord
+from discord.ext import commands
 import asyncio
-import time
 import keys
-from twilio.rest import Client
+# from twilio.rest import Client
 
 botName      = 'Yukkuri'
 # Eventually, we'll have Yukkuri talk more so
 # this will be a safemeasure so there are no infinite loops
 # of Yukkuri talking to itself
 
-#Importing keys
 directory = keys.directory
 discordBotToken = keys.botToken
 
-# requires twilio account and API keys.
-twilioNumber = keys.twilioNumber
-twilioAccountSid = keys.twilioAccountSid
-twilioAuthToken = keys.twilioAuthToken
+# twilioNumber = keys.twilioNumber
+# twilioAccountSid = keys.twilioAccountSid
+# twilioAuthToken = keys.twilioAuthToken
 
-# Initialize twilio and discord apis.
-twilioClient = Client(twilioAccountSid, twilioAuthToken)
-discordClient = discord.Client()
+# twilioClient = Client(twilioAccountSid, twilioAuthToken)
+bot = commands.Bot(command_prefix='!')
 
-#Show Console we are logged in.
-@discordClient.event
+@commands.cooldown(1, 60 * 30, commands.cooldowns.BucketType.user)
+@bot.command(pass_context = True)
+async def ping(ctx, member: discord.Member):
+    sent = False
+    for user in directory:
+        if user == member.mention:
+            # twilioClient.messages.create(
+            #     to    = directory[user],
+            #     from_ = twilioNumber,
+            #     body  = "{} has pinged you in discord!".format(message.author.name),
+            # )
+            print("Message Sent: '{} has pinged you in discord!'".format(
+                ctx.message.author.name
+                ))
+            await bot.say("{}: Ping sent to {} at {}!".format(
+                ctx.message.author.mention, 
+                member.mention, 
+                directory[user]
+                ))
+            sent = True
+    if not sent:
+        await bot.say("{}: I couldn't find {} in the directory.".format(
+            ctx.message.author.mention,
+            member.mention
+            ))
+        ping.reset_cooldown(ctx)
+
+@bot.event
 async def on_ready():
-    print('Logged in as ' + discordClient.user.name + " " + discordClient.user.id)
+    print('Logged in as {} {}'.format(
+        bot.user.name, 
+        bot.user.id
+        ))
     print('------')
 
+@ping.error
+async def ping_error(error, ctx):
+    if (isinstance(error, commands.errors.BadArgument)) or (isinstance(error, commands.errors.MissingRequiredArgument)):
+        await bot.say("{}: Please mention someone in your command.".format(
+        	ctx.message.author.mention
+        	))
+    elif isinstance(error, commands.errors.CommandOnCooldown):
+        m, s = divmod(error.retry_after, 60)
+        await bot.say("{}: Cooldown for your user is active for {:.0f} minutes and {:.0f} seconds.".format(
+            ctx.message.author.mention, m, s
+        ))
+    else:
+    	print("Unhandled error for ping module: {}".format(error))
 
-@discordClient.event
-async def on_message(message):
-    if message.content.startswith('!ping '):
-        print("Message fits filter... {}: {}".format(message.author.name,message.content[6:]))
-
-        # Only process the mentions if they only mention one user. List is unreliable otherwise. Functionality will change later.
-        if len(message.mentions) == 1:
-            print("MENTION PASS")
-            for user in directory:
-                if user == message.mentions[0].mention:
-                    await discordClient.send_message(message.channel, "DEBUG OUT: User Found {}".format(directory[user]))
-                    twilioClient.messages.create(
-                        to    = directory[user],
-                        from_ = twilioNumber,
-                        body  = "{} has pinged you in discord!".format(message.author.name),
-                    )
-                    print("Message Sent: '{} has pinged you in discord!'".format(message.author.name))
-        else:
-            await discordClient.send_message(message.channel, "ERR: Multiple mentions therefore list is unreliable.")
-
-discordClient.run(discordBotToken)
+bot.run(discordBotToken)
