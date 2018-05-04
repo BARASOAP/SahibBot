@@ -4,12 +4,8 @@ import discord
 from discord.ext import commands
 import asyncio
 import keys
+import sys,traceback
 # from twilio.rest import Client
-
-botName      = 'Yukkuri'
-# Eventually, we'll have Yukkuri talk more so
-# this will be a safemeasure so there are no infinite loops
-# of Yukkuri talking to itself
 
 directory = keys.directory
 discordBotToken = keys.botToken
@@ -20,6 +16,19 @@ discordBotToken = keys.botToken
 
 # twilioClient = Client(twilioAccountSid, twilioAuthToken)
 bot = commands.Bot(command_prefix='!')
+
+initial_extensions = (
+    "cogs.testload",
+    "cogs.ping"
+)
+
+if __name__ == '__main__':
+    for extension in initial_extensions:
+        try:
+            bot.load_extension(extension)
+        except Exception as e:
+            print(f'Failed to load extension {extension}.', file=sys.stderr)
+            traceback.print_exc()
 
 @commands.cooldown(1, 60 * 30, commands.cooldowns.BucketType.user)
 @bot.command(pass_context = True)
@@ -56,18 +65,23 @@ async def on_ready():
         ))
     print('------')
 
-@ping.error
-async def ping_error(error, ctx):
+@bot.event
+async def on_command_error(error, ctx):
     if (isinstance(error, commands.errors.BadArgument)) or (isinstance(error, commands.errors.MissingRequiredArgument)):
-        await bot.say("{}: Please mention someone in your command.".format(
+        await bot.send_message(ctx.message.channel, "{}: Please mention someone in your command.".format(
         	ctx.message.author.mention
         	))
     elif isinstance(error, commands.errors.CommandOnCooldown):
         m, s = divmod(error.retry_after, 60)
-        await bot.say("{}: Cooldown for your user is active for {:.0f} minutes and {:.0f} seconds.".format(
+        await bot.send_message(ctx.message.channel, "{}: Cooldown for your user is active for {:.0f} minutes and {:.0f} seconds.".format(
             ctx.message.author.mention, m, s
         ))
+    elif isinstance(error, commands.errors.CommandNotFound):
+        await bot.send_message(ctx.message.channel, "{}: {}".format(
+            ctx.message.author.mention,
+            error
+        ))
     else:
-    	print("Unhandled error for ping module: {}".format(error))
+    	print("Unhandled error: {}".format(error))
 
 bot.run(discordBotToken)
