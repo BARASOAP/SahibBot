@@ -2,6 +2,7 @@ import asyncio
 import discord
 from discord.ext import commands
 import keys
+from twilio.rest import Client
 
 class Ping:
     """Handle all the error conditions"""
@@ -9,6 +10,9 @@ class Ping:
     def __init__(self, bot):
         self.bot = bot
         self.directory = keys.directory
+        self.twilioNumber = keys.twilioNumber
+        self.twilioClient = Client(keys.twilioAccountSid, keys.twilioAuthToken)
+        print("!!!Warning: Twilio Client is LIVE!!!")
         
     @commands.cooldown(1, 60 * 30, commands.cooldowns.BucketType.user)
     @commands.command(pass_context = True)
@@ -16,11 +20,11 @@ class Ping:
         sent = False
         for user in self.directory:
             if user == member.mention:
-                # twilioClient.messages.create(
-                #     to    = directory[user],
-                #     from_ = twilioNumber,
-                #     body  = "{} has pinged you in discord!".format(message.author.name),
-                # )
+                self.twilioClient.messages.create(
+                    to    = self.directory[user],
+                    from_ = self.twilioNumber,
+                    body  = "{} has pinged you in discord!".format(ctx.message.author.name),
+                )
                 print("Message Sent: '{} has pinged you in discord!'".format(
                     ctx.message.author.name
                     ))
