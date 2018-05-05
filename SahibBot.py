@@ -19,7 +19,7 @@ bot = commands.Bot(command_prefix='!')
 
 initial_extensions = (
     "cogs.testload",
-    "cogs.ping"
+    "cogs.error"
 )
 
 if __name__ == '__main__':
@@ -64,24 +64,5 @@ async def on_ready():
         bot.user.id
         ))
     print('------')
-
-@bot.event
-async def on_command_error(error, ctx):
-    if (isinstance(error, commands.errors.BadArgument)) or (isinstance(error, commands.errors.MissingRequiredArgument)):
-        await bot.send_message(ctx.message.channel, "{}: Please mention someone in your command.".format(
-        	ctx.message.author.mention
-        	))
-    elif isinstance(error, commands.errors.CommandOnCooldown):
-        m, s = divmod(error.retry_after, 60)
-        await bot.send_message(ctx.message.channel, "{}: Cooldown for your user is active for {:.0f} minutes and {:.0f} seconds.".format(
-            ctx.message.author.mention, m, s
-        ))
-    elif isinstance(error, commands.errors.CommandNotFound):
-        await bot.send_message(ctx.message.channel, "{}: {}".format(
-            ctx.message.author.mention,
-            error
-        ))
-    else:
-    	print("Unhandled error: {}".format(error))
 
 bot.run(discordBotToken)
