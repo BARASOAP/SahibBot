@@ -26,10 +26,7 @@ if __name__ == '__main__':
 
 @bot.event
 async def on_ready():
-    print('Logged in as {} {}'.format(
-        bot.user.name, 
-        bot.user.id
-        ))
+    print(f'Logged in as {bot.user.name} {bot.user.id}')
     print('------')
 
 bot.run(discordBotToken)
