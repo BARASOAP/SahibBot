@@ -11,12 +11,12 @@ class Error:
 
     async def on_command_error(self, error, ctx):
         if (isinstance(error, commands.errors.BadArgument)) or (isinstance(error, commands.errors.MissingRequiredArgument)):
-            await self.bot.send_message(ctx.message.channel, f'{ctx.message.author.mention}: Please mention someone in your command.')
+            await self.bot.send_message(ctx.message.channel, f'{ctx.message.author.name}: Please mention someone in your command.')
         elif isinstance(error, commands.errors.CommandOnCooldown):
             m, s = divmod(error.retry_after, 60)
-            await self.bot.send_message(ctx.message.channel, f'{ctx.message.author.mention}: Cooldown for your user is active for {m:.0f} minutes and {s:.0f} seconds.')
+            await self.bot.send_message(ctx.message.channel, f'{ctx.message.author.name}: Cooldown for your user is active for {m:.0f} minutes and {s:.0f} seconds.')
         elif isinstance(error, commands.errors.CommandNotFound):
-            await self.bot.send_message(ctx.message.channel, f'{ctx.message.author.mention}: {error}')
+            await self.bot.send_message(ctx.message.channel, f'{ctx.message.author.name}: {error}')
         else:
         	print(f'Unhandled error: {error}')
 
