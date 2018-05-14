@@ -1,54 +1,32 @@
-# listen for messages on a discord server (globally, all channels)
-# send to specified phone number if the message wasn't sent from the bot
+# listen for ping on discord server (globally, all channels)
+# Sends a ping to user's phone if outside of cooldown.
 import discord
+from discord.ext import commands
 import asyncio
-import time
+import keys
+import sys,traceback
 
-# discord.py has logging available: see docs. you probs won't need.
+discordBotToken = keys.botToken
 
-botName      = 'Yukkuri' # IMPORTANT! must be real bot username
-#       otherwise you'll get infinite loops of the bot responding to itself
+bot = commands.Bot(command_prefix='!')
 
-keysFile = open("keys.txt")
-keys = keysFile.readlines()
+initial_extensions = (
+    "cogs.testload",
+    "cogs.ping",
+    "cogs.error"
+)
 
-# pull the discord bot token from 
-discordBotToken = keys[0].rstrip()
+if __name__ == '__main__':
+    for extension in initial_extensions:
+        try:
+            bot.load_extension(extension)
+        except Exception as e:
+            print(f'Failed to load extension {extension}.', file=sys.stderr)
+            traceback.print_exc()
 
-###############################################################################
-# auth client objects
-discordClient = discord.Client()
-
-directory = {<DICTIONARY OF EVERYONES PHONES AND @REPLY NAMES>}
-
-@discordClient.event
+@bot.event
 async def on_ready():
-    print('Logged in as ' + discordClient.user.name + " " + discordClient.user.id)
+    print(f'Logged in as {bot.user.name} {bot.user.id}')
     print('------')
 
-@discordClient.event
-async def on_message(message):
-    if message.content.startswith('!ping '):
-        print("Message fits filter... {}: {}".format(message.author.name,message.content[6:]))
-        #await discordClient.send_message(message.channel, "DEBUG OUT: Author:{} Mentions:{} Message:{} Match:{}".format(message.author.name, message.mentions, message.content, directory[message.mentions[0].mention]))
-
-        # Only process the mentions if they only mention one user. List is unreliable otherwise. Functionality will change later.
-        if len(message.mentions) == 1:
-            print("MENTION PASS")
-            for user in directory:
-                print("{} {}".format(user, message.mentions[0].mention))
-                if user == message.mentions[0].mention:
-                    await discordClient.send_message(message.channel, "DEBUG OUT: User Found {}".format(directory[user]))
-        else:
-            await discordClient.send_message(message.channel, "ERR: Multiple mentions therefore list is unreliable.")
-
-
-    #if message.author.name != botName:
-    #    twilioClient.messages.create(
-    #        to    = phoneNumber,
-    #        from_ = twilioNumber,
-    #        body  = "{} - {}".format(message.author.name,message.content),
-    #    )
-    #    print("sent message: {} - {}".format(message.author.name,message.content))
-
-discordClient.run(discordBotToken)
+bot.run(discordBotToken)
