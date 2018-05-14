@@ -5,14 +5,13 @@ import keys
 from twilio.rest import Client
 
 class Ping:
-    """Handle all the error conditions"""
+    """Ping a user using the Twilio API."""
 
     def __init__(self, bot):
         self.bot = bot
         self.directory = keys.directory
         self.twilioNumber = keys.twilioNumber
         self.twilioClient = Client(keys.twilioAccountSid, keys.twilioAuthToken)
-        print("!!!Warning: Twilio Client is LIVE!!!")
         
     @commands.cooldown(1, 60 * 30, commands.cooldowns.BucketType.user)
     @commands.command(pass_context = True)
@@ -23,23 +22,13 @@ class Ping:
                 self.twilioClient.messages.create(
                     to    = self.directory[user],
                     from_ = self.twilioNumber,
-                    body  = "{} has pinged you in discord!".format(ctx.message.author.name),
+                    body  = f'{ctx.message.author.name} has pinged you in discord!'
                 )
-                print("Message Sent: '{} has pinged you in discord!'".format(
-                    ctx.message.author.name
-                    ))
-                await self.bot.say("{}: Ping sent to {} at {}!".format(
-                    ctx.message.author.mention, 
-                    member.mention, 
-                    self.directory[user]
-                    ))
+                await self.bot.say(f'{ctx.message.author.name}: Ping sent to {member.name} at {self.directory[user]}!')
                 sent = True
         if not sent:
-            await self.bot.say("{}: I couldn't find {} in the directory.".format(
-                ctx.message.author.mention,
-                member.mention
-                ))
-            self.bot.cooldown.reset_cooldown(ctx)
+            await self.bot.say(f'{ctx.message.author.name}: I couldn\'t find {member.name} in the directory.')
+            self.ping.reset_cooldown(ctx)
 
 def setup(bot):
     bot.add_cog(Ping(bot))
