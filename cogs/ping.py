@@ -22,7 +22,7 @@ class Ping:
                 self.twilioClient.messages.create(
                     to    = self.directory[user],
                     from_ = self.twilioNumber,
-                    body  = f'{ctx.message.author.name} has pinged you in discord!'),
+                    body  = f'{ctx.message.author.name} has pinged you in discord!'
                 )
                 await self.bot.say(f'{ctx.message.author.name}: Ping sent to {member.name} at {self.directory[user]}!')
                 sent = True
