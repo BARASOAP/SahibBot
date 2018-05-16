@@ -21,21 +21,23 @@ class Highlight:
         )
 
     async def on_reaction_add(self, react, user):
-        e = discord.Embed(
+
+        message_embed = discord.Embed(
             description = f'{react.message.clean_content}',
             color = discord.Color.gold()
         )
-        e.set_author(
+        message_embed.set_author(
                 name = react.message.author.display_name,
                 icon_url = react.message.author.avatar_url
             )
-        c = ''
+
+        reactions = ''
         for reaction in react.message.reactions:
-            c = c + f'{reaction.emoji}{reaction.count} '
-        await self.bot.send_message(self.bot.get_channel(self.highlight_channel), 
-            # f'{user}: {react.message.channel} {react.emoji}'
-            content = c,
-            embed = e
+            reactions = reactions + f'{reaction.emoji}{reaction.count} '
+
+        await self.bot.send_message(self.bot.get_channel(self.highlight_channel),
+            content = reactions,
+            embed = message_embed
         )
 
 def setup(bot):
