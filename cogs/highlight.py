@@ -39,17 +39,20 @@ class Highlight:
         )
 
     async def on_reaction_add(self, react, user):
-        if react.message in self.message_bank:
-            await self.bot.edit_message(self.message_bank[react.message],
-                new_content = self.create_content(react),
-                embed = self.create_embed(react, user)
-            )
+        if react.message.author.id != self.bot.connection.user.id:
+            if react.message in self.message_bank:
+                await self.bot.edit_message(self.message_bank[react.message],
+                    new_content = self.create_content(react),
+                    embed = self.create_embed(react, user)
+                )
+            else:
+                new_message = await self.bot.send_message(self.bot.get_channel(self.highlight_channel),
+                    content = self.create_content(react),
+                    embed = self.create_embed(react, user)
+                )
+                self.message_bank.update({react.message: new_message})
         else:
-            new_message = await self.bot.send_message(self.bot.get_channel(self.highlight_channel),
-                content = self.create_content(react),
-                embed = self.create_embed(react, user)
-            )
-            self.message_bank.update({react.message: new_message})
+            pass
 
     async def on_reaction_remove(self, react, user):
         if len(react.message.reactions) == 0:
