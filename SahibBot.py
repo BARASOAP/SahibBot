@@ -14,7 +14,8 @@ initial_extensions = (
     "cogs.testload",
     #  "cogs.ping",
     "cogs.highlight",
-    "cogs.error"
+    "cogs.error",
+    "cogs.news"
 )
 
 if __name__ == '__main__':
