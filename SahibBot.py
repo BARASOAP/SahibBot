@@ -12,7 +12,7 @@ bot = commands.Bot(command_prefix='!')
 
 initial_extensions = (
     "cogs.testload",
-    #  "cogs.ping",
+    # "cogs.ping",
     "cogs.highlight",
     "cogs.error",
     "cogs.news"

@@ -2,8 +2,8 @@ import asyncio
 import discord
 from discord.ext import commands
 import keys
-import requests
-# from newsapi import NewsAPI
+from newsapi import NewsApiClient
+import json
 
 class news:
     """Grabs first top five news headlines from ______."""
@@ -11,17 +11,17 @@ class news:
     def __init__(self, bot):
         self.bot = bot
         self.directory = keys.directory
-        self.string1 = keys.string1
-        # self.NewsApiToken = NewsApiClient(api_key=keys.NewsApiToken)
+        self.NewsApiToken = keys.NewsApiToken
+    
+    @commands.command(pass_context=True)
+    async def news(self, ctx):
+        # await self.bot.say(self.string1)
         
-    async def news(self):
-        await self.bot.say(self.string1)
-        
-        # url = ('https://newsapi.org/v2/top-headlines?'
-        # 'country=us&'
-        # 'apiKey=' + self.NewsApiToken)
-        # response = requests.get(url)
-        # print(response.json())
+        url = ('https://newsapi.org/v2/top-headlines?'
+        'country=us&'
+        'apiKey=' + self.NewsApiToken)
+        print("URL: " + url)
+
 
 def setup(bot):
     bot.add_cog(news(bot))
