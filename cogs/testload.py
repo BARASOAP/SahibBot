@@ -1,12 +1,15 @@
 import asyncio
+import logging
 
 from discord.ext import commands
 
+logger = logging.getLogger(f'SahibBot.{__name__}')
 class TestLoad:
     """Test Cog"""
 
     def __init__(self,bot):
         self.bot = bot
+        logger.debug('loaded')
 
     @commands.command(pass_context=True)
     async def testload(self, ctx):

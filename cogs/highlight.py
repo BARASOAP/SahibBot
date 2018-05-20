@@ -1,6 +1,10 @@
 import asyncio
+import logging
+
 import discord
 from discord.ext import commands
+
+logger = logging.getLogger(f'SahibBot.{__name__}')
 
 class Highlight:
     """Post messages with reactions on them to a highlight channel."""
@@ -9,6 +13,7 @@ class Highlight:
         self.bot = bot
         self.highlight_channel = '446287440920182784'
         self.message_bank = {}
+        logger.debug('loaded')
 
     def create_embed(self, react, user):
         payload = discord.Embed(
@@ -45,12 +50,14 @@ class Highlight:
                     new_content = self.create_content(react),
                     embed = self.create_embed(react, user)
                 )
+                logger.info(f'*{react.message.id}')
             else:
                 new_message = await self.bot.send_message(self.bot.get_channel(self.highlight_channel),
                     content = self.create_content(react),
                     embed = self.create_embed(react, user)
                 )
                 self.message_bank.update({react.message: new_message})
+                logger.info(f'+{react.message.id}')
         else:
             pass
 
@@ -59,6 +66,7 @@ class Highlight:
             if react.message in self.message_bank:
                 await self.bot.delete_message(self.message_bank[react.message])
                 del self.message_bank[react.message]
+                logger.info(f'-{react.message.id}')
             else:
                 pass
         else:
@@ -66,6 +74,7 @@ class Highlight:
                 new_content = self.create_content(react),
                 embed = self.create_embed(react, user)
             )
+            logger.info(f'*{react.message.id}')
 
 def setup(bot):
     bot.add_cog(Highlight(bot))

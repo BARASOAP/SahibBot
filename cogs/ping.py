@@ -17,6 +17,7 @@ class Ping:
         self.directory = keys.directory
         self.twilioNumber = keys.twilioNumber
         self.twilioClient = Client(keys.twilioAccountSid, keys.twilioAuthToken)
+        logger.debug('loaded')
         
     @commands.cooldown(1, 60 * 30, commands.cooldowns.BucketType.user)
     @commands.command(pass_context = True)
