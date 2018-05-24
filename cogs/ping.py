@@ -1,8 +1,13 @@
 import asyncio
+import logging
+
 import discord
 from discord.ext import commands
-import keys
 from twilio.rest import Client
+
+import keys
+
+logger = logging.getLogger(f'SahibBot.{__name__}')
 
 class Ping:
     """Ping a user using the Twilio API."""
@@ -12,6 +17,7 @@ class Ping:
         self.directory = keys.directory
         self.twilioNumber = keys.twilioNumber
         self.twilioClient = Client(keys.twilioAccountSid, keys.twilioAuthToken)
+        logger.debug('loaded')
         
     @commands.cooldown(1, 60 * 30, commands.cooldowns.BucketType.user)
     @commands.command(pass_context = True)
@@ -25,9 +31,11 @@ class Ping:
                     body  = f'{ctx.message.author.name} has pinged you in discord!'
                 )
                 await self.bot.say(f'{ctx.message.author.name}: Ping sent to {member.name} at {self.directory[user]}!')
+                logger.info(f'OK! {ctx.message.author.name} -> {member.name}@{self.directory[user]}')
                 sent = True
         if not sent:
             await self.bot.say(f'{ctx.message.author.name}: I couldn\'t find {member.name} in the directory.')
+            logger.info(f'UserNotInDict: \'{member.name}\'')
             self.ping.reset_cooldown(ctx)
 
 def setup(bot):
