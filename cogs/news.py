@@ -1,49 +1,46 @@
 import asyncio
-import aiohttp
 import discord
 from discord.ext import commands
 import keys
 from newsapi import NewsApiClient
-from newsapi import const
 from newsapi.newsapi_exception import NewsAPIException
+import requests
 import json
 
+#   Bot command which retrieves JSON file from a NewsAPI.org and displays the top 5 popular articles from Google News.
 class news:
-    """Grabs first top five news headlines from ______."""
 
     def __init__(self, bot):
         self.bot = bot
         self.directory = keys.directory
         self.NewsApiToken = keys.NewsApiToken
-        # self.newsapi = NewsApiClient(api_key=keys.NewsApiToken)
 
     @commands.command(pass_context=True)
     async def news(self, ctx):
-        # await self.bot.say(self.string1)
         
-        # url = ('https://newsapi.org/v2/top-headlines?'
-        # 'country=us&'
-        # 'apiKey=' + self.NewsApiToken)
-        # print("URL: " + url)
+        #   Generates a valid URL with the desired parameters and valid NewsApiToken. Currently hardcoded the parameters.
+        url = ('https://newsapi.org/v2/top-headlines?'
+        'country=us&' +
+        'published_at.start=NOW-1DAYS%2FDAY&published_at.end=NOW&' +
+        'source.name[]=Google+News&' +
+        'language=en&' +
+        'sort_by=popularity&' +
+        'pageSize=5&' +
+        'apiKey=' + self.NewsApiToken)
 
-        newsapi = NewsApiClient(api_key=self.NewsApiToken)
-        top_headlines = newsapi.get_top_headlines(q='bitcoin', sources='bbc-news,the-verge', category='business', language='en', country='us')
-        
-        # payload = {}
-        # payload['q'] = q
-        # payload['sources'] = sources
-        # payload['language'] = language
-        # payload['country'] = country
-        # payload['category'] = category
-        # payload['pageSize'] = page_size
-        # payload['page'] = page
+        #   HTTP GET request to retrieve data from URL generated from the previous block of code
+        r = requests.get(url, timeout=5)
 
-        r = requests.get(const.TOP_HEADLINES_URL, auth=newsapi, timeout=30, params=payload)
-        if r.status_code != requests.codes.ok:
+        #   Raises an exception if the status of the HTTP request is not 'OK' (<StatusCode: 200> = OK)
+        if r.status_code != 200:
             raise NewsAPIException(r.json())
-
-        return r.json()
-
+        else:
+            json_data = r.json()
+            
+            #   Loop that commands the discord bot to print each article URL
+            for x in json_data['articles']:
+                await self.bot.say('--------------------------------------------------------------------------------------------------------------')
+                await self.bot.say(x['url'])
 
 def setup(bot):
     bot.add_cog(news(bot))
